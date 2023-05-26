@@ -1,0 +1,55 @@
+# database.py
+import mysql.connector
+from sqlalchemy import create_engine
+
+def get_conn():
+    conn = mysql.connector.connect(
+        host="127.0.0.1",
+        user="usuario",
+        password="usuario",
+        port="3307",
+        database="movies"
+    )
+    return conn
+
+def get_engine():
+    engine = create_engine('mysql+mysqlconnector://usuario:usuario@127.0.0.1:3307/movies')
+    return engine
+
+def create_filmes_table():
+    conn = get_conn()
+    cursor = conn.cursor()
+    filmes_table = """CREATE TABLE IF NOT EXISTS filmes (
+     id INTEGER PRIMARY KEY,
+     title VARCHAR(80),
+     rating FLOAT,
+     year YEAR,
+     image VARCHAR(180),
+     genre VARCHAR(20),
+     director VARCHAR(40)
+    )"""
+    cursor.execute(filmes_table)
+    conn.commit()
+    conn.close()
+////////////////////////////////
+# dataframe.py
+from api_to_dataframe import df
+
+def get_filmes_df():
+    my_df = df[['id', 'title', 'rating', 'year', 'image']].copy()
+    my_df['id'] = my_df.index
+    my_df['rating'] = my_df['rating'].astype(float)
+    my_df['genre'] = df['genre'].apply(lambda x: x[0])
+    my_df['director'] = df['director'].apply(lambda x: x[0])
+    return my_df
+/////////////////////////////////
+# main.py
+from database import get_engine, create_filmes_table
+from dataframe import get_filmes_df
+
+create_filmes_table()
+
+engine = get_engine()
+my_df = get_filmes_df()
+my_df.to_sql('filmes', con=engine, if_exists='append', index=False)
+////////////////////////////////////
