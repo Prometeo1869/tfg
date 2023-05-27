@@ -30,3 +30,10 @@ def create_filmes_table():
     cursor.execute(filmes_table)
     conn.commit()
     conn.close()
+
+def drop_filmes_table():
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS filmes")
+    conn.commit()
+    conn.close()
