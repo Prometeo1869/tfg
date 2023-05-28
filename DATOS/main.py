@@ -19,7 +19,7 @@ def create_db():
     ventana.update()
     
     try:
-        file_name = 'main.py'
+        file_name = 'datos_init.py'
         content = open(file_name).read()
         exec(content)
         
